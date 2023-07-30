@@ -1,12 +1,10 @@
-﻿using System;
+﻿using Carnac.Logic.Enums;
+using System;
 using System.ComponentModel;
 using System.Windows;
-using Carnac.Logic.Enums;
 
-namespace Carnac.Logic.Models
-{
-    public class PopupSettings : NotifyPropertyChanged
-    {
+namespace Carnac.Logic.Models {
+    public class PopupSettings: NotifyPropertyChanged {
         [DefaultValue(350)]
         public int ItemMaxWidth { get; set; }
 
@@ -34,12 +32,10 @@ namespace Carnac.Logic.Models
         public bool AutoUpdate { get; set; }
 
         //Used to determine which from it's leftmost co-ord
-        double left;
-        public double Left
-        {
-            get { return left; }
-            set
-            {
+        private double left;
+        public double Left {
+            get => left;
+            set {
                 left = value;
                 OnLeftChanged(EventArgs.Empty);
             }
@@ -47,10 +43,23 @@ namespace Carnac.Logic.Models
 
         public event EventHandler LeftChanged;
 
-        protected void OnLeftChanged(EventArgs e)
-        {
-            var handler = LeftChanged;
-            if (handler != null) handler(this, e);
+        protected void OnLeftChanged(EventArgs e) {
+            LeftChanged?.Invoke(this, e);
+        }
+
+        private double top;
+        public double Top {
+            get => top;
+            set {
+                top = value;
+                OnTopChanged(EventArgs.Empty);
+            }
+        }
+
+        public event EventHandler TopChanged;
+
+        protected void OnTopChanged(EventArgs e) {
+            TopChanged?.Invoke(this, e);
         }
 
         [NotifyProperty(AlsoNotifyFor = new[] { "Margins" })]
@@ -66,27 +75,15 @@ namespace Carnac.Logic.Models
         public int RightOffset { get; set; }
 
         [DefaultValue("")]
-        public string ProcessFilterExpression { get; set;  }
+        public string ProcessFilterExpression { get; set; }
 
-        public double ScaleTransform
-        {
-            get { return Placement == NotificationPlacement.TopLeft || Placement == NotificationPlacement.TopRight ? 1 : -1; }
-        }
+        public double ScaleTransform => Placement == NotificationPlacement.TopLeft || Placement == NotificationPlacement.TopRight ? 1 : -1;
 
-        public string Alignment
-        {
-            get { return Placement == NotificationPlacement.TopLeft || Placement == NotificationPlacement.BottomLeft ? "Left" : "Right"; }
-        }
+        public string Alignment => Placement == NotificationPlacement.TopLeft || Placement == NotificationPlacement.BottomLeft ? "Left" : "Right";
 
-        public Thickness Margins
-        {
-            get { return new Thickness(LeftOffset, TopOffset, RightOffset, BottomOffset); }
-        }
+        public Thickness Margins => new Thickness(LeftOffset, TopOffset, RightOffset, BottomOffset);
 
-        public string SortDescription
-        {
-            get { return Placement == NotificationPlacement.TopLeft || Placement == NotificationPlacement.TopRight ? "Ascending" : "Descending"; }
-        }
+        public string SortDescription => Placement == NotificationPlacement.TopLeft || Placement == NotificationPlacement.TopRight ? "Ascending" : "Descending";
 
         public bool DetectShortcutsOnly { get; set; }
         public bool ShowApplicationIcon { get; set; }
