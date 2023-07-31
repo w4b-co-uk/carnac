@@ -63,7 +63,7 @@ namespace Carnac.Logic {
                 }
             }
 
-            screens = screens.OrderBy(s => s.Left).ToList();
+            screens = screens.OrderBy(s => s.Top).ThenBy(s => s.Left).ToList();
 
             return screens;
         }

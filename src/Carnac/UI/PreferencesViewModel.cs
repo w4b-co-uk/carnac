@@ -110,16 +110,13 @@ namespace Carnac.UI {
 
             Settings.Screen = SelectedScreen.Index;
 
-            if (SelectedScreen.NotificationPlacementTopLeft) {
-                Settings.Placement = NotificationPlacement.TopLeft;
-            } else if (SelectedScreen.NotificationPlacementBottomLeft) {
-                Settings.Placement = NotificationPlacement.BottomLeft;
-            } else if (SelectedScreen.NotificationPlacementTopRight) {
-                Settings.Placement = NotificationPlacement.TopRight;
-            } else {
-                Settings.Placement = SelectedScreen.NotificationPlacementBottomRight ? NotificationPlacement.BottomRight : NotificationPlacement.BottomLeft;
-            }
-
+            Settings.Placement = SelectedScreen.NotificationPlacementTopLeft
+                ? NotificationPlacement.TopLeft
+                : SelectedScreen.NotificationPlacementBottomLeft
+                    ? NotificationPlacement.BottomLeft
+                    : SelectedScreen.NotificationPlacementTopRight
+                                    ? NotificationPlacement.TopRight
+                                    : SelectedScreen.NotificationPlacementBottomRight ? NotificationPlacement.BottomRight : NotificationPlacement.BottomLeft;
             PlaceScreen();
 
             Settings.SettingsConfigured = true;
