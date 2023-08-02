@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Carnac.Logic.KeyMonitor;
+using Carnac.Tests;
+using Microsoft.CSharp;
+using System;
 using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
@@ -7,85 +10,70 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Forms;
-using Carnac.Logic.KeyMonitor;
-using Carnac.Tests;
-using Microsoft.CSharp;
 
-namespace KeyStreamCapture
-{
-    public partial class MainWindow
-    {
-        readonly List<InterceptKeyEventArgs> keys = new List<InterceptKeyEventArgs>();
-        readonly IDisposable subscription;
-        bool capturing;
+namespace KeyStreamCapture {
+    public partial class MainWindow {
+        private readonly List<InterceptKeyEventArgs> keys = new List<InterceptKeyEventArgs>();
+        private readonly IDisposable subscription;
+        private bool capturing;
 
-        public MainWindow()
-        {
+        public MainWindow() {
             InitializeComponent();
-            subscription = InterceptKeys.Current.GetKeyStream().Subscribe(value =>
-            {
-                if (capturing)
+            subscription = InterceptKeys.Current.GetKeyStream().Subscribe(value => {
+                if (capturing) {
                     keys.Add(value);
+                }
             });
         }
 
-        private void StartCapture(object sender, RoutedEventArgs e)
-        {
+        private void StartCapture(object sender, RoutedEventArgs e) {
             keys.Clear();
             capturing = true;
         }
 
-        private void StopCapture(object sender, RoutedEventArgs e)
-        {
+        private void StopCapture(object sender, RoutedEventArgs e) {
             capturing = false;
             GenerateCode();
         }
 
-        private void GenerateCode()
-        {
-            keys.ToObservable();
-            var cgo = new CodeGeneratorOptions
-                          {
-                              BracingStyle = "C",
-                              BlankLinesBetweenMembers = false
-                          };
-            using (var provider = new CSharpCodeProvider())
-            {
-                var method = new CodeMemberMethod
-                {
+        private void GenerateCode() {
+            _ = keys.ToObservable();
+            CodeGeneratorOptions cgo = new CodeGeneratorOptions {
+                BracingStyle = "C",
+                BlankLinesBetweenMembers = false
+            };
+            using (CSharpCodeProvider provider = new CSharpCodeProvider()) {
+                CodeMemberMethod method = new CodeMemberMethod {
                     Name = "KeyStream",
                     ReturnType = new CodeTypeReference(typeof(IObservable<InterceptKeyEventArgs>))
                 };
 
-                var player =
+                CodeVariableDeclarationStatement player =
                     new CodeVariableDeclarationStatement(new CodeTypeReference(typeof(KeyPlayer)), "keys",
                     new CodeObjectCreateExpression(typeof(KeyPlayer)));
-                method.Statements.Add(player);
-                foreach (var interceptKeyEventArgse in keys)
-                {
-                    var key = new CodeObjectCreateExpression(new CodeTypeReference(typeof(InterceptKeyEventArgs)),
+                _ = method.Statements.Add(player);
+                foreach (InterceptKeyEventArgs interceptKeyEventArgse in keys) {
+                    CodeObjectCreateExpression key = new CodeObjectCreateExpression(new CodeTypeReference(typeof(InterceptKeyEventArgs)),
                     new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(typeof(Keys)), interceptKeyEventArgse.Key.ToString()),
                     new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(typeof(KeyDirection)), interceptKeyEventArgse.KeyDirection.ToString()),
                     new CodePrimitiveExpression(interceptKeyEventArgse.AltPressed),
                     new CodePrimitiveExpression(interceptKeyEventArgse.ControlPressed),
                     new CodePrimitiveExpression(interceptKeyEventArgse.ShiftPressed));
 
-                    var keyPress = new CodeMethodInvokeExpression(new CodeVariableReferenceExpression("keys"), "Add", key);
-                    method.Statements.Add(keyPress);
+                    CodeMethodInvokeExpression keyPress = new CodeMethodInvokeExpression(new CodeVariableReferenceExpression("keys"), "Add", key);
+                    _ = method.Statements.Add(keyPress);
                 }
-                method.Statements.Add(new CodeMethodReturnStatement(new CodeVariableReferenceExpression("keys")));
+                _ = method.Statements.Add(new CodeMethodReturnStatement(new CodeVariableReferenceExpression("keys")));
 
-                var sb = new StringBuilder();
-                using(var stringWriter = new StringWriter(sb))
-                {
+                StringBuilder sb = new StringBuilder();
+                using (StringWriter stringWriter = new StringWriter(sb)) {
                     provider.GenerateCodeFromMember(method, stringWriter, cgo);
                 }
                 textBox.Text = sb.ToString();
             }
         }
 
-        protected override void OnClosed(EventArgs e)
-        {
+        protected override void OnClosed(EventArgs e) {
             subscription.Dispose();
         }
     }
