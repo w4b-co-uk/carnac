@@ -1,12 +1,9 @@
-using System.Windows.Forms;
 using Carnac.Logic.KeyMonitor;
+using System.Windows.Forms;
 
-namespace Carnac.Tests
-{
-    public static class KeyStreams
-    {
-        public static KeyPlayer WinkeyE()
-        {
+namespace Carnac.Tests {
+    public static class KeyStreams {
+        public static KeyPlayer WinkeyE() {
             return new KeyPlayer
                        {
                            new InterceptKeyEventArgs(Keys.LWin, KeyDirection.Down, false, false, false),
@@ -16,8 +13,7 @@ namespace Carnac.Tests
                        };
         }
 
-        public static KeyPlayer ExclaimationMark()
-        {
+        public static KeyPlayer ExclaimationMark() {
             return new KeyPlayer
                        {
                            new InterceptKeyEventArgs(Keys.LShiftKey, KeyDirection.Down, false, false, false),
@@ -27,8 +23,7 @@ namespace Carnac.Tests
                        };
         }
 
-        public static KeyPlayer Number1()
-        {
+        public static KeyPlayer Number1() {
             return new KeyPlayer
                        {
                            new InterceptKeyEventArgs(Keys.D1, KeyDirection.Down, false, false, false),
@@ -36,8 +31,7 @@ namespace Carnac.Tests
                        };
         }
 
-        public static KeyPlayer LetterL()
-        {
+        public static KeyPlayer LetterL() {
             return new KeyPlayer
                        {
                            new InterceptKeyEventArgs(Keys.L, KeyDirection.Down, false, false, false),
@@ -45,8 +39,7 @@ namespace Carnac.Tests
                        };
         }
 
-        public static KeyPlayer ShiftL()
-        {
+        public static KeyPlayer ShiftL() {
             return new KeyPlayer
                        {
                            new InterceptKeyEventArgs(Keys.LShiftKey, KeyDirection.Down, false, false, false),
@@ -56,8 +49,7 @@ namespace Carnac.Tests
                        };
         }
 
-        public static KeyPlayer CtrlShiftL()
-        {
+        public static KeyPlayer CtrlShiftL() {
             return new KeyPlayer
                        {
                            new InterceptKeyEventArgs(Keys.LControlKey, KeyDirection.Down, false, false, false),
@@ -69,8 +61,7 @@ namespace Carnac.Tests
                        };
         }
 
-        public static KeyPlayer CtrlU()
-        {
+        public static KeyPlayer CtrlU() {
             return new KeyPlayer
                        {
                            new InterceptKeyEventArgs(Keys.LControlKey, KeyDirection.Down, false, false, false),

@@ -1,14 +1,11 @@
-﻿namespace Carnac.Tests
-{
-    public abstract class SpecificationFor<T>
-    {
+﻿namespace Carnac.Tests {
+    public abstract class SpecificationFor<T> {
         public T Subject;
 
         public abstract T Given();
         public abstract void When();
 
-        protected SpecificationFor()
-        {
+        protected SpecificationFor() {
             Subject = Given();
             When();
         }
