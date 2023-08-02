@@ -1,11 +1,8 @@
-using System;
 using System.Runtime.InteropServices;
 
-namespace Carnac.Logic.Native
-{
+namespace Carnac.Logic.Native {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public struct DEVMODE
-    {
+    public struct DEVMODE {
         // You can define the following constant
         // but OUTSIDE the structure because you know
         // that size and layout of the structure
@@ -20,42 +17,42 @@ namespace Carnac.Logic.Native
 
         // After the 32-bytes array
         [MarshalAs(UnmanagedType.U2)]
-        public UInt16 dmSpecVersion;
+        public ushort dmSpecVersion;
 
         [MarshalAs(UnmanagedType.U2)]
-        public UInt16 dmDriverVersion;
+        public ushort dmDriverVersion;
 
         [MarshalAs(UnmanagedType.U2)]
-        public UInt16 dmSize;
+        public ushort dmSize;
 
         [MarshalAs(UnmanagedType.U2)]
-        public UInt16 dmDriverExtra;
+        public ushort dmDriverExtra;
 
         [MarshalAs(UnmanagedType.U4)]
-        public UInt32 dmFields;
+        public uint dmFields;
 
         public POINTL dmPosition;
 
         [MarshalAs(UnmanagedType.U4)]
-        public UInt32 dmDisplayOrientation;
+        public uint dmDisplayOrientation;
 
         [MarshalAs(UnmanagedType.U4)]
-        public UInt32 dmDisplayFixedOutput;
+        public uint dmDisplayFixedOutput;
 
         [MarshalAs(UnmanagedType.I2)]
-        public Int16 dmColor;
+        public short dmColor;
 
         [MarshalAs(UnmanagedType.I2)]
-        public Int16 dmDuplex;
+        public short dmDuplex;
 
         [MarshalAs(UnmanagedType.I2)]
-        public Int16 dmYResolution;
+        public short dmYResolution;
 
         [MarshalAs(UnmanagedType.I2)]
-        public Int16 dmTTOption;
+        public short dmTTOption;
 
         [MarshalAs(UnmanagedType.I2)]
-        public Int16 dmCollate;
+        public short dmCollate;
 
         // CCHDEVICENAME = 32 = 0x50
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
@@ -66,45 +63,45 @@ namespace Carnac.Logic.Native
         //public Byte[] dmFormName;
 
         [MarshalAs(UnmanagedType.U2)]
-        public UInt16 dmLogPixels;
+        public ushort dmLogPixels;
 
         [MarshalAs(UnmanagedType.U4)]
-        public UInt32 dmBitsPerPel;
+        public uint dmBitsPerPel;
 
         [MarshalAs(UnmanagedType.U4)]
-        public UInt32 dmPelsWidth;
+        public uint dmPelsWidth;
 
         [MarshalAs(UnmanagedType.U4)]
-        public UInt32 dmPelsHeight;
+        public uint dmPelsHeight;
 
         [MarshalAs(UnmanagedType.U4)]
-        public UInt32 dmDisplayFlags;
+        public uint dmDisplayFlags;
 
         [MarshalAs(UnmanagedType.U4)]
-        public UInt32 dmDisplayFrequency;
+        public uint dmDisplayFrequency;
 
         [MarshalAs(UnmanagedType.U4)]
-        public UInt32 dmICMMethod;
+        public uint dmICMMethod;
 
         [MarshalAs(UnmanagedType.U4)]
-        public UInt32 dmICMIntent;
+        public uint dmICMIntent;
 
         [MarshalAs(UnmanagedType.U4)]
-        public UInt32 dmMediaType;
+        public uint dmMediaType;
 
         [MarshalAs(UnmanagedType.U4)]
-        public UInt32 dmDitherType;
+        public uint dmDitherType;
 
         [MarshalAs(UnmanagedType.U4)]
-        public UInt32 dmReserved1;
+        public uint dmReserved1;
 
         [MarshalAs(UnmanagedType.U4)]
-        public UInt32 dmReserved2;
+        public uint dmReserved2;
 
         [MarshalAs(UnmanagedType.U4)]
-        public UInt32 dmPanningWidth;
+        public uint dmPanningWidth;
 
         [MarshalAs(UnmanagedType.U4)]
-        public UInt32 dmPanningHeight;
+        public uint dmPanningHeight;
     }
 }

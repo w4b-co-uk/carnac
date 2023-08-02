@@ -1,38 +1,32 @@
-﻿using System;
+﻿using Carnac.Logic.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Carnac.Logic.Models;
 
-namespace Carnac.Logic
-{
-    public class ShortcutAccumulator
-    {
-        List<KeyShortcut> possibleKeyShortcuts;
-        Message[] messages;
-        readonly List<KeyPress> keys;
+namespace Carnac.Logic {
+    public class ShortcutAccumulator {
+        private List<KeyShortcut> possibleKeyShortcuts;
+        private Message[] messages;
+        private readonly List<KeyPress> keys;
 
-        public ShortcutAccumulator()
-        {
+        public ShortcutAccumulator() {
             keys = new List<KeyPress>();
         }
 
-        public IEnumerable<KeyPress> Keys
-        {
-            get { return keys; }
-        }
+        public IEnumerable<KeyPress> Keys => keys;
 
-        public ShortcutAccumulator ProcessKey(IShortcutProvider shortcutProvider, KeyPress key)
-        {
-            if (HasCompletedValue)
+        public ShortcutAccumulator ProcessKey(IShortcutProvider shortcutProvider, KeyPress key) {
+            if (HasCompletedValue) {
                 return new ShortcutAccumulator().ProcessKey(shortcutProvider, key);
+            }
 
-            if (!keys.Any())
-            {
-                var possibleShortcuts = shortcutProvider.GetShortcutsStartingWith(key);
-                if (possibleShortcuts.Any())
+            if (!keys.Any()) {
+                List<KeyShortcut> possibleShortcuts = shortcutProvider.GetShortcutsStartingWith(key);
+                if (possibleShortcuts.Any()) {
                     BeginShortcut(key, possibleShortcuts);
-                else
+                } else {
                     Complete(key);
+                }
 
                 return this;
             }
@@ -41,71 +35,64 @@ namespace Carnac.Logic
             return this;
         }
 
-        public Message[] GetMessages()
-        {
-            if (!HasCompletedValue)
-                throw new InvalidOperationException();
-
-            return messages;
+        public Message[] GetMessages() {
+            return !HasCompletedValue ? throw new InvalidOperationException() : messages;
         }
 
         public bool HasCompletedValue { get; private set; }
 
-        void Add(KeyPress key)
-        {
-            var isFirstKey = keys.Count == 0;
+        private void Add(KeyPress key) {
+            bool isFirstKey = keys.Count == 0;
 
-            if (!isFirstKey && keys[0].Process.ProcessName != key.Process.ProcessName)
-            {
+            if (!isFirstKey && keys[0].Process.ProcessName != key.Process.ProcessName) {
                 NoMatchingShortcut();
                 return;
             }
 
             keys.Add(key);
-            var newPossibleShortcuts = possibleKeyShortcuts.Where(s => s.StartsWith(keys)).ToList();
+            List<KeyShortcut> newPossibleShortcuts = possibleKeyShortcuts.Where(s => s.StartsWith(keys)).ToList();
 
             EvaluateShortcuts(newPossibleShortcuts);
         }
 
-        void EvaluateShortcuts(List<KeyShortcut> newPossibleShortcuts)
-        {
-            if (!newPossibleShortcuts.Any())
+        private void EvaluateShortcuts(List<KeyShortcut> newPossibleShortcuts) {
+            if (!newPossibleShortcuts.Any()) {
                 NoMatchingShortcut();
-            else if (newPossibleShortcuts.Any(s => s.IsMatch(keys)))
+            } else if (newPossibleShortcuts.Any(s => s.IsMatch(keys))) {
                 ShortcutCompleted(newPossibleShortcuts.First(s => s.IsMatch(keys)));
-            else
+            } else {
                 possibleKeyShortcuts = newPossibleShortcuts;
+            }
         }
 
-        void BeginShortcut(KeyPress key, List<KeyShortcut> possibleShortcuts)
-        {
+        private void BeginShortcut(KeyPress key, List<KeyShortcut> possibleShortcuts) {
             keys.Add(key);
             EvaluateShortcuts(possibleShortcuts);
         }
 
-        void ShortcutCompleted(KeyShortcut shortcut)
-        {
-            if (HasCompletedValue)
+        private void ShortcutCompleted(KeyShortcut shortcut) {
+            if (HasCompletedValue) {
                 throw new InvalidOperationException();
+            }
 
             messages = new[] { new Message(Keys, shortcut, true) };
             HasCompletedValue = true;
         }
 
-        void NoMatchingShortcut()
-        {
-            if (HasCompletedValue)
+        private void NoMatchingShortcut() {
+            if (HasCompletedValue) {
                 throw new InvalidOperationException();
+            }
 
             // When we have no matching shortcut just break all key presses into individual messages
             HasCompletedValue = true;
             messages = keys.Select(k => new Message(k)).ToArray();
         }
 
-        void Complete(KeyPress key)
-        {
-            if (HasCompletedValue)
+        private void Complete(KeyPress key) {
+            if (HasCompletedValue) {
                 throw new InvalidOperationException();
+            }
 
             HasCompletedValue = true;
             messages = new[] { new Message(key) };

@@ -1,14 +1,12 @@
-﻿﻿using System;
+﻿using System;
 
-namespace Carnac.Logic
-{
+namespace Carnac.Logic {
 
     /// <summary>
     /// Enables property notification.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
-    public class NotifyPropertyAttribute : Attribute
-    {
+    public class NotifyPropertyAttribute: Attribute {
         /// <summary>
         /// <b>true</b> to perform an equality check before firing property notification; otherwise <b>false</b>.
         /// </summary>

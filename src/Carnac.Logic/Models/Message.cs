@@ -4,150 +4,123 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Media;
 
-namespace Carnac.Logic.Models
-{
-    public sealed class Message
-    {
-        readonly ReadOnlyCollection<string> textCollection;
-        readonly ReadOnlyCollection<KeyPress> keys;
-        readonly string processName;
-        readonly ImageSource processIcon;
-        readonly string shortcutName;
-        readonly bool canBeMerged;
-        readonly bool isShortcut;
-        readonly bool isModifier;
-        readonly bool isDeleting;
-        readonly DateTime lastMessage;
-        readonly Message previous;
+namespace Carnac.Logic.Models {
+    public sealed class Message {
+        private readonly ReadOnlyCollection<KeyPress> keys;
 
-        public Message()
-        {
-            lastMessage = DateTime.Now;
+        public Message() {
+            LastMessage = DateTime.Now;
         }
 
         public Message(KeyPress key)
-            : this()
-        {
-            processName = key.Process.ProcessName;
-            processIcon = key.Process.ProcessIcon;
-            canBeMerged = !key.HasModifierPressed;
-            isModifier = key.HasModifierPressed;
+            : this() {
+            ProcessName = key.Process.ProcessName;
+            ProcessIcon = key.Process.ProcessIcon;
+            CanBeMerged = !key.HasModifierPressed;
+            IsModifier = key.HasModifierPressed;
 
             keys = new ReadOnlyCollection<KeyPress>(new[] { key });
-            textCollection = new ReadOnlyCollection<string>(CreateTextSequence(key).ToArray());
+            Text = new ReadOnlyCollection<string>(CreateTextSequence(key).ToArray());
         }
 
-        public Message(IEnumerable<KeyPress> keys, KeyShortcut shortcut, Boolean isShortcut = false)
-            : this()
-        {
-            var allKeys = keys.ToArray();
-            var distinctProcessName = allKeys.Select(k => k.Process.ProcessName)
+        public Message(IEnumerable<KeyPress> keys, KeyShortcut shortcut, bool isShortcut = false)
+            : this() {
+            KeyPress[] allKeys = keys.ToArray();
+            string[] distinctProcessName = allKeys.Select(k => k.Process.ProcessName)
                 .Distinct()
                 .ToArray();
-            if (distinctProcessName.Count() != 1)
+            if (distinctProcessName.Count() != 1) {
                 throw new InvalidOperationException("Keys are from different processes");
+            }
 
-            processName = distinctProcessName.Single();
-            processIcon = allKeys.First().Process.ProcessIcon;
-            shortcutName = shortcut.Name;
-            this.isShortcut = isShortcut;
-            this.isModifier = allKeys.Any(k => k.HasModifierPressed);
-            canBeMerged = false;
+            ProcessName = distinctProcessName.Single();
+            ProcessIcon = allKeys.First().Process.ProcessIcon;
+            ShortcutName = shortcut.Name;
+            IsShortcut = isShortcut;
+            IsModifier = allKeys.Any(k => k.HasModifierPressed);
+            CanBeMerged = false;
 
             this.keys = new ReadOnlyCollection<KeyPress>(allKeys);
 
-            var textSeq = CreateTextSequence(allKeys).ToList();
-            if (!string.IsNullOrEmpty(shortcutName))
-                textSeq.Add(string.Format(" [{0}]", shortcutName));
-            textCollection = new ReadOnlyCollection<string>(textSeq);
+            List<string> textSeq = CreateTextSequence(allKeys).ToList();
+            if (!string.IsNullOrEmpty(ShortcutName)) {
+                textSeq.Add(string.Format(" [{0}]", ShortcutName));
+            }
+
+            Text = new ReadOnlyCollection<string>(textSeq);
         }
 
         private Message(Message initial, Message appended)
-            : this(initial.keys.Concat(appended.keys), new KeyShortcut(initial.ShortcutName))
-        {
-            previous = initial;
-            canBeMerged = true;
+            : this(initial.keys.Concat(appended.keys), new KeyShortcut(initial.ShortcutName)) {
+            Previous = initial;
+            CanBeMerged = true;
         }
 
         private Message(Message initial, bool isDeleting)
-            : this(initial.keys, new KeyShortcut(initial.ShortcutName))
-        {
-            this.isDeleting = isDeleting;
-            previous = initial;
-            lastMessage = initial.lastMessage;
+            : this(initial.keys, new KeyShortcut(initial.ShortcutName)) {
+            IsDeleting = isDeleting;
+            Previous = initial;
+            LastMessage = initial.LastMessage;
         }
 
-        public string ProcessName { get { return processName; } }
+        public string ProcessName { get; }
 
-        public ImageSource ProcessIcon { get { return processIcon; } }
+        public ImageSource ProcessIcon { get; }
 
-        public string ShortcutName { get { return shortcutName; } }
+        public string ShortcutName { get; }
 
-        public bool CanBeMerged { get { return canBeMerged; } }
+        public bool CanBeMerged { get; }
 
-        public bool IsShortcut { get { return isShortcut; } }
+        public bool IsShortcut { get; }
 
-        public Message Previous { get { return previous; } }
+        public Message Previous { get; }
 
-        public ReadOnlyCollection<string> Text { get { return textCollection; } }
+        public ReadOnlyCollection<string> Text { get; }
 
-        public DateTime LastMessage { get { return lastMessage; } }
+        public DateTime LastMessage { get; }
 
-        public bool IsDeleting { get { return isDeleting; } }
+        public bool IsDeleting { get; }
 
-        public bool IsModifier { get { return isModifier; } }
+        public bool IsModifier { get; }
 
-        public Message Merge(Message other)
-        {
+        public Message Merge(Message other) {
             return new Message(this, other);
         }
 
-        static readonly TimeSpan OneSecond = TimeSpan.FromSeconds(1);
+        private static readonly TimeSpan OneSecond = TimeSpan.FromSeconds(1);
 
-        public static Message MergeIfNeeded(Message previousMessage, Message newMessage)
-        {
+        public static Message MergeIfNeeded(Message previousMessage, Message newMessage) {
             return ShouldCreateNewMessage(previousMessage, newMessage)
                 ? newMessage
                 : previousMessage.Merge(newMessage);
         }
 
-        static bool ShouldCreateNewMessage(Message previous, Message current)
-        {
+        private static bool ShouldCreateNewMessage(Message previous, Message current) {
             return previous.ProcessName != current.ProcessName ||
                    current.LastMessage.Subtract(previous.LastMessage) > OneSecond ||
                    !previous.CanBeMerged ||
                    !current.CanBeMerged;
         }
 
-        public Message FadeOut()
-        {
+        public Message FadeOut() {
             return new Message(this, true);
         }
 
-        static IEnumerable<string> CreateTextSequence(KeyPress key)
-        {
-            return CreateTextSequence(new[] {key});
+        private static IEnumerable<string> CreateTextSequence(KeyPress key) {
+            return CreateTextSequence(new[] { key });
         }
 
-        static IEnumerable<string> CreateTextSequence(IEnumerable<KeyPress> keys)
-        {
+        private static IEnumerable<string> CreateTextSequence(IEnumerable<KeyPress> keys) {
             return keys.Aggregate(new List<RepeatedKeyPress>(),
-              (acc, curr) =>
-              {
-                  if (acc.Any())
-                  {
-                      var last = acc.Last();
-                      if (last.IsRepeatedBy(curr))
-                      {
+              (acc, curr) => {
+                  if (acc.Any()) {
+                      RepeatedKeyPress last = acc.Last();
+                      if (last.IsRepeatedBy(curr)) {
                           last.IncrementRepeat();
-                      }
-                      else
-                      {
+                      } else {
                           acc.Add(new RepeatedKeyPress(curr, last.NextRequiresSeperator));
                       }
-                  }
-                  else
-                  {
+                  } else {
                       acc.Add(new RepeatedKeyPress(curr));
                   }
                   return acc;
@@ -155,87 +128,75 @@ namespace Carnac.Logic.Models
               .SelectMany(rkp => rkp.GetTextParts());
         }
 
-        public override string ToString()
-        {
+        public override string ToString() {
             return string.Format("{0} {1} {2}", ProcessName, string.Join(string.Empty, Text), ShortcutName);
         }
 
-        private sealed class RepeatedKeyPress
-        {
-            readonly bool requiresPrefix;
-            readonly bool nextRequiresSeperator;
-            readonly string[] textParts;
-            int repeatCount;
+        private sealed class RepeatedKeyPress {
+            private readonly bool requiresPrefix;
+            private readonly string[] textParts;
+            private int repeatCount;
 
-            public RepeatedKeyPress(KeyPress keyPress, bool requiresPrefix = false)
-            {
-                nextRequiresSeperator = keyPress.HasModifierPressed;
+            public RepeatedKeyPress(KeyPress keyPress, bool requiresPrefix = false) {
+                NextRequiresSeperator = keyPress.HasModifierPressed;
                 textParts = keyPress.GetTextParts().ToArray();
                 this.requiresPrefix = requiresPrefix;
                 repeatCount = 1;
             }
 
-            public bool NextRequiresSeperator { get { return nextRequiresSeperator; } }
+            public bool NextRequiresSeperator { get; }
 
-            public void IncrementRepeat()
-            {
+            public void IncrementRepeat() {
                 repeatCount++;
             }
 
-            public bool IsRepeatedBy(KeyPress nextKeyPress)
-            {
+            public bool IsRepeatedBy(KeyPress nextKeyPress) {
                 return textParts.SequenceEqual(nextKeyPress.GetTextParts());
             }
 
-            public IEnumerable<string> GetTextParts()
-            {
-                if (requiresPrefix)
+            public IEnumerable<string> GetTextParts() {
+                if (requiresPrefix) {
                     yield return ", ";
-                foreach (var textPart in textParts)
-                {
+                }
+
+                foreach (string textPart in textParts) {
                     yield return textPart;
                 }
-                if (repeatCount > 1)
+                if (repeatCount > 1) {
                     yield return string.Format(" x {0} ", repeatCount);
+                }
             }
         }
 
         #region Equality overrides
 
-        bool Equals(Message other)
-        {
-            return textCollection.SequenceEqual(other.textCollection)
+        private bool Equals(Message other) {
+            return Text.SequenceEqual(other.Text)
                 && keys.SequenceEqual(other.keys)
-                && string.Equals(processName, other.processName)
-                && Equals(processIcon, other.processIcon)
-                && string.Equals(shortcutName, other.shortcutName)
-                && canBeMerged.Equals(other.canBeMerged)
-                && isShortcut.Equals(other.isShortcut)
-                && isDeleting.Equals(other.isDeleting)
-                && lastMessage.Equals(other.lastMessage);
+                && string.Equals(ProcessName, other.ProcessName)
+                && Equals(ProcessIcon, other.ProcessIcon)
+                && string.Equals(ShortcutName, other.ShortcutName)
+                && CanBeMerged.Equals(other.CanBeMerged)
+                && IsShortcut.Equals(other.IsShortcut)
+                && IsDeleting.Equals(other.IsDeleting)
+                && LastMessage.Equals(other.LastMessage);
         }
 
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((Message)obj);
+        public override bool Equals(object obj) {
+            return !(obj is null) && (ReferenceEquals(this, obj) || (obj.GetType() == GetType() && Equals((Message)obj)));
         }
 
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = (textCollection != null ? textCollection.GetHashCode() : 0);
+        public override int GetHashCode() {
+            unchecked {
+                int hashCode = Text != null ? Text.GetHashCode() : 0;
                 hashCode = (hashCode * 397) ^ (keys != null ? keys.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (processName != null ? processName.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (processIcon != null ? processIcon.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (shortcutName != null ? shortcutName.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ canBeMerged.GetHashCode();
-                hashCode = (hashCode * 397) ^ isShortcut.GetHashCode();
-                hashCode = (hashCode * 397) ^ isDeleting.GetHashCode();
-                hashCode = (hashCode * 397) ^ lastMessage.GetHashCode();
+                hashCode = (hashCode * 397) ^ (ProcessName != null ? ProcessName.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (ProcessIcon != null ? ProcessIcon.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (ShortcutName != null ? ShortcutName.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ CanBeMerged.GetHashCode();
+                hashCode = (hashCode * 397) ^ IsShortcut.GetHashCode();
+                hashCode = (hashCode * 397) ^ IsDeleting.GetHashCode();
+                hashCode = (hashCode * 397) ^ LastMessage.GetHashCode();
                 return hashCode;
             }
         }

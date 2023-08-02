@@ -1,7 +1,5 @@
-namespace Carnac.Logic.Native
-{
-    public class DetailedScreen
-    {
+namespace Carnac.Logic.Native {
+    public class DetailedScreen {
         public int Index { get; set; }
         public string FriendlyName { get; set; }
         public double Width { get; set; }

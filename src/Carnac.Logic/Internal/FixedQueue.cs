@@ -1,40 +1,32 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Carnac.Logic.Internal
-{
-    internal class FixedQueue<T> : IEnumerable<T>
-    {
-        readonly int fixedSize;
-        readonly Queue<T> queue;
+namespace Carnac.Logic.Internal {
+    internal class FixedQueue<T>: IEnumerable<T> {
+        private readonly int fixedSize;
+        private readonly Queue<T> queue;
 
-        public FixedQueue(int fixedSize)
-        {
+        public FixedQueue(int fixedSize) {
             this.fixedSize = fixedSize;
             queue = new Queue<T>();
         }
 
-        public void Enqueue(T item)
-        {
+        public void Enqueue(T item) {
             queue.Enqueue(item);
-            if (queue.Count > fixedSize)
-            {
-                queue.Dequeue();
+            if (queue.Count > fixedSize) {
+                _ = queue.Dequeue();
             }
         }
 
-        public void Clear()
-        {
+        public void Clear() {
             queue.Clear();
         }
 
-        public IEnumerator<T> GetEnumerator()
-        {
+        public IEnumerator<T> GetEnumerator() {
             return queue.GetEnumerator();
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
+        IEnumerator IEnumerable.GetEnumerator() {
             return GetEnumerator();
         }
     }

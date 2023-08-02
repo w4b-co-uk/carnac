@@ -1,10 +1,8 @@
 using System.Runtime.InteropServices;
 
-namespace Carnac.Logic.Native
-{
+namespace Carnac.Logic.Native {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public struct DISPLAY_DEVICE
-    {
+    public struct DISPLAY_DEVICE {
         [MarshalAs(UnmanagedType.U4)]
         public int cb;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]

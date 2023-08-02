@@ -1,7 +1,5 @@
-namespace Carnac.Logic.KeyMonitor
-{
-    public enum KeyDirection
-    {
+namespace Carnac.Logic.KeyMonitor {
+    public enum KeyDirection {
         Down,
         Up,
         Unknown

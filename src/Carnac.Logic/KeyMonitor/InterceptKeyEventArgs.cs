@@ -1,12 +1,9 @@
 using System;
 using System.Windows.Forms;
 
-namespace Carnac.Logic.KeyMonitor
-{
-    public class InterceptKeyEventArgs : EventArgs
-    {
-        public InterceptKeyEventArgs(Keys key, KeyDirection keyDirection, bool altPressed, bool controlPressed, bool shiftPressed)
-        {
+namespace Carnac.Logic.KeyMonitor {
+    public class InterceptKeyEventArgs: EventArgs {
+        public InterceptKeyEventArgs(Keys key, KeyDirection keyDirection, bool altPressed, bool controlPressed, bool shiftPressed) {
             AltPressed = altPressed;
             ControlPressed = controlPressed;
             Key = key;
@@ -21,8 +18,7 @@ namespace Carnac.Logic.KeyMonitor
         public Keys Key { get; private set; }
         public KeyDirection KeyDirection { get; private set; }
 
-        public bool IsLetter()
-        {
+        public bool IsLetter() {
             return Key >= Keys.A && Key <= Keys.Z;
         }
     }

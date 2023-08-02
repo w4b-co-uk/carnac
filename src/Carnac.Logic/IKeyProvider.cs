@@ -1,10 +1,8 @@
-using System;
 using Carnac.Logic.Models;
+using System;
 
-namespace Carnac.Logic
-{
-    public interface IKeyProvider
-    {
+namespace Carnac.Logic {
+    public interface IKeyProvider {
         IObservable<KeyPress> GetKeyStream();
     }
 }

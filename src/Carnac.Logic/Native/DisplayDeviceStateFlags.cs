@@ -1,10 +1,8 @@
 using System;
 
-namespace Carnac.Logic.Native
-{
+namespace Carnac.Logic.Native {
     [Flags()]
-    public enum DisplayDeviceStateFlags : int
-    {
+    public enum DisplayDeviceStateFlags: int {
         /// <summary>The device is part of the desktop.</summary>
         AttachedToDesktop = 0x1,
         MultiDriver = 0x2,

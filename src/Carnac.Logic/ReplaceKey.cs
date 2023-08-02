@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace Carnac.Logic
-{
-    public static class ReplaceKey
-    {
-        static readonly Dictionary<Keys, string> ShiftReplacements = new Dictionary<Keys, string>
+namespace Carnac.Logic {
+    public static class ReplaceKey {
+        private static readonly Dictionary<Keys, string> ShiftReplacements = new Dictionary<Keys, string>
         {
             {Keys.D0, ")"},
             {Keys.D1, "!"},
@@ -33,8 +31,7 @@ namespace Carnac.Logic
             {Keys.Insert, "ins"},
             {Keys.Delete, "del"}
         };
-
-        static readonly Dictionary<Keys, string> Replacements = new Dictionary<Keys, string>
+        private static readonly Dictionary<Keys, string> Replacements = new Dictionary<Keys, string>
         {
             {Keys.Space, " "},
             {Keys.D0, "0"},
@@ -80,34 +77,30 @@ namespace Carnac.Logic
             {Keys.RWin, "Win"},
         };
 
-        public static Keys? ToKey(string keyText)
-        {
-            foreach (var shiftReplacement in ShiftReplacements)
-            {
-                if (shiftReplacement.Value.Equals(keyText, StringComparison.CurrentCultureIgnoreCase))
+        public static Keys? ToKey(string keyText) {
+            foreach (KeyValuePair<Keys, string> shiftReplacement in ShiftReplacements) {
+                if (shiftReplacement.Value.Equals(keyText, StringComparison.CurrentCultureIgnoreCase)) {
                     return shiftReplacement.Key;
+                }
             }
-            Keys parsedKey;
-            if (Enum.TryParse(keyText, true, out parsedKey))
+            if (Enum.TryParse(keyText, true, out Keys parsedKey)) {
                 return parsedKey;
+            }
 
-            foreach (var replacement in Replacements)
-            {
-                if (replacement.Value.Equals(keyText, StringComparison.CurrentCultureIgnoreCase))
+            foreach (KeyValuePair<Keys, string> replacement in Replacements) {
+                if (replacement.Value.Equals(keyText, StringComparison.CurrentCultureIgnoreCase)) {
                     return replacement.Key;
+                }
             }
             return null;
         }
 
-        public static string Sanitise(this Keys key)
-        {
+        public static string Sanitise(this Keys key) {
             return Replacements.ContainsKey(key) ? Replacements[key] : string.Format(key.ToString());
         }
 
-        public static bool SanitiseShift(this Keys key, out string sanitisedKeyInput)
-        {
-            if (ShiftReplacements.ContainsKey(key))
-            {
+        public static bool SanitiseShift(this Keys key, out string sanitisedKeyInput) {
+            if (ShiftReplacements.ContainsKey(key)) {
                 sanitisedKeyInput = ShiftReplacements[key];
                 return true;
             }

@@ -1,24 +1,20 @@
-﻿using System;
+﻿using Carnac.Logic.Models;
+using System;
 using System.Reactive.Linq;
-using Carnac.Logic.Models;
 
-namespace Carnac.Logic
-{
-    public class MessageProvider : IMessageProvider
-    {
-        readonly IShortcutProvider shortcutProvider;
-        readonly IKeyProvider keyProvider;
-        readonly PopupSettings settings;
+namespace Carnac.Logic {
+    public class MessageProvider: IMessageProvider {
+        private readonly IShortcutProvider shortcutProvider;
+        private readonly IKeyProvider keyProvider;
+        private readonly PopupSettings settings;
 
-        public MessageProvider(IShortcutProvider shortcutProvider, IKeyProvider keyProvider, PopupSettings settings)
-        {
+        public MessageProvider(IShortcutProvider shortcutProvider, IKeyProvider keyProvider, PopupSettings settings) {
             this.shortcutProvider = shortcutProvider;
             this.keyProvider = keyProvider;
             this.settings = settings;
         }
 
-        public IObservable<Message> GetMessageStream()
-        {
+        public IObservable<Message> GetMessageStream() {
             /*
             shortcut Acc stream:
                - ! before item means HasCompletedValue is false
@@ -37,22 +33,9 @@ namespace Carnac.Logic
                 .Where(c => c.HasCompletedValue)
                 .SelectMany(c => c.GetMessages())
                 .Scan(new Message(), (acc, key) => Message.MergeIfNeeded(acc, key))
-                .Where(m =>
-                {
-                    if (settings.DetectShortcutsOnly && settings.ShowOnlyModifiers)
-                    {
-                        return m.IsShortcut && m.IsModifier;
-                    }
-                    if (settings.DetectShortcutsOnly)
-                    {
-                        return m.IsShortcut;
-                    }
-                    if (settings.ShowOnlyModifiers)
-                    {
-                        return m.IsModifier;
-                    }
-                    return true;
-                });
+                .Where(m => settings.DetectShortcutsOnly && settings.ShowOnlyModifiers
+                        ? m.IsShortcut && m.IsModifier
+                        : settings.DetectShortcutsOnly ? m.IsShortcut : !settings.ShowOnlyModifiers || m.IsModifier);
         }
     }
 }
