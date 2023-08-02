@@ -1,13 +1,10 @@
-﻿using System.Collections.ObjectModel;
-using Carnac.Logic;
+﻿using Carnac.Logic;
 using Carnac.Logic.Models;
+using System.Collections.ObjectModel;
 
-namespace Carnac.UI
-{
-    public class KeyShowViewModel: NotifyPropertyChanged
-    {
-        public KeyShowViewModel(PopupSettings popupSettings)
-        {
+namespace Carnac.UI {
+    public class KeyShowViewModel: NotifyPropertyChanged {
+        public KeyShowViewModel(PopupSettings popupSettings) {
             Messages = new ObservableCollection<Message>();
             Settings = popupSettings;
         }

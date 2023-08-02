@@ -1,30 +1,26 @@
-using System.Windows;
-using System.Windows.Controls;
 using Carnac.Logic.Native;
 using Carnac.UI;
+using System.Windows;
+using System.Windows.Controls;
 
-namespace Carnac
-{
-    public partial class PositionOnMonitorSelector
-    {
-        public PositionOnMonitorSelector()
-        {
+namespace Carnac {
+    public partial class PositionOnMonitorSelector {
+        public PositionOnMonitorSelector() {
             InitializeComponent();
         }
 
-        private void RadioChecked(object sender, RoutedEventArgs e)
-        {
-            var dc = DataContext as PreferencesViewModel;
-            if (dc == null)
+        private void RadioChecked(object sender, RoutedEventArgs e) {
+            if (!(DataContext is PreferencesViewModel dc)) {
                 return;
+            }
 
-            var rb = sender as RadioButton;
-            if (rb == null)
+            if (!(sender is RadioButton rb)) {
                 return;
+            }
 
-            var tag = rb.Tag as DetailedScreen;
-            if (tag == null)
+            if (!(rb.Tag is DetailedScreen tag)) {
                 return;
+            }
 
             dc.SelectedScreen = tag;
         }

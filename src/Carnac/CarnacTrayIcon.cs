@@ -1,34 +1,28 @@
 using System;
 using System.Drawing;
-using System.Reflection;
-using System.Windows.Forms;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
+using System.Windows.Forms;
 using Application = System.Windows.Application;
 
-namespace Carnac
-{
-    public class CarnacTrayIcon : IDisposable
-    {
-        readonly NotifyIcon trayIcon;
+namespace Carnac {
+    public class CarnacTrayIcon: IDisposable {
+        private readonly NotifyIcon trayIcon;
 
-        public CarnacTrayIcon()
-        {
-            var exitMenuItem = new MenuItem
-            {
+        public CarnacTrayIcon() {
+            MenuItem exitMenuItem = new MenuItem {
                 Text = Properties.Resources.ShellView_Exit
             };
 
-            var iconStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Carnac.icon.embedded.ico");
+            System.IO.Stream iconStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Carnac.icon.embedded.ico");
 
-            trayIcon = new NotifyIcon
-            {
+            trayIcon = new NotifyIcon {
                 Icon = new Icon(iconStream),
                 ContextMenu = new ContextMenu(new[] { exitMenuItem })
             };
 
-            exitMenuItem.Click += (sender, args) =>
-            {
+            exitMenuItem.Click += (sender, args) => {
                 trayIcon.Visible = false;
                 Application.Current.Shutdown();
             };
@@ -36,26 +30,20 @@ namespace Carnac
             trayIcon.Visible = true;
         }
 
-        public event Action OpenPreferences = () => { }; 
+        public event Action OpenPreferences = () => { };
 
-        void NotifyIconClick(object sender, MouseEventArgs mouseEventArgs)
-        {
-            if (mouseEventArgs.Button == MouseButtons.Left)
-            {
-                var preferencesWindow = Application.Current.Windows.Cast<Window>().FirstOrDefault(x => x.Name == "PreferencesViewWindow");
-                if (preferencesWindow != null)
-                {
-                    preferencesWindow.Activate();
-                }
-                else
-                {
+        private void NotifyIconClick(object sender, MouseEventArgs mouseEventArgs) {
+            if (mouseEventArgs.Button == MouseButtons.Left) {
+                Window preferencesWindow = Application.Current.Windows.Cast<Window>().FirstOrDefault(x => x.Name == "PreferencesViewWindow");
+                if (preferencesWindow != null) {
+                    _ = preferencesWindow.Activate();
+                } else {
                     OpenPreferences();
                 }
             }
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             trayIcon.Dispose();
         }
     }
